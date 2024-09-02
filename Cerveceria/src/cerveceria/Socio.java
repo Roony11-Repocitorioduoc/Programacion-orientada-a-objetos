@@ -85,7 +85,7 @@ public class Socio
     public void activacionTarjetas(int añosSocio, int añosActiva)
     {
         if (this.getEdad()==añosSocio || 
-        this.tarjeta.getAñoInscripcion()-1980==añosActiva)
+        2024-this.tarjeta.getAñoInscripcion()==añosActiva)
             this.tarjeta.setEstado('A');
         else
             System.out.println("No se cumplen los requisitos minimos del socio, " +
@@ -107,7 +107,7 @@ public class Socio
     {
         double montoFinal;
         
-        if (this.tarjeta.getAñoInscripcion()-1980>5)
+        if (2024-this.tarjeta.getAñoInscripcion()>5)
             montoFinal = montoCompra*0.5;
         else
             montoFinal = montoCompra;

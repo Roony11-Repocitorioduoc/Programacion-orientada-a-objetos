@@ -10,6 +10,8 @@ public class Cerveceria
         
         sociotest.enviarCorreo();
         
+        sociotest.activacionTarjetas(30, 2);
+        
         System.out.println(sociotest.descuentoVenta(5000));
         
         System.out.println("----");
@@ -21,6 +23,8 @@ public class Cerveceria
         System.out.println(socio1.infoTarjeta());
         
         socio1.enviarCorreo();
+        
+        socio1.activacionTarjetas(30, 2);
         
         System.out.println(socio1.descuentoVenta(5000));
     }
