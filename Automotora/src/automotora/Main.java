@@ -16,6 +16,8 @@ public class Main
         rentadora.listarVehiculos();
         
         vehp1.imprimirBoleta();
+        
+        rentadora.listarPorPatente("ASDF-22");
     }
     
 }
