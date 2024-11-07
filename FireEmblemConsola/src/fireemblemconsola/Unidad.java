@@ -8,15 +8,15 @@ public abstract class Unidad
     private int puntosVida;
     private int puntosHabilidad;
     private int puntosAtaque;
-    private int putosDefensa;
+    private int puntosDefensa;
     private int puntosVelocidad;
-    private double puntosSuerte;
+    private int puntosSuerte;
     private Arma arma;
     
     public abstract void imprimirInformacion();
     
     // Retorna el porcentaje de esquiva de la victima
-    public double retonarEsquiva(Unidad victima)
+    public double retornarEsquiva(Unidad victima)
     {
         return victima.puntosVelocidad+(victima.puntosSuerte/2);
     }
@@ -32,12 +32,7 @@ public abstract class Unidad
     {
         double golpear;
         
-        golpear = (atacante.puntosHabilidad*2+atacante.puntosSuerte/2+atacante.getArma().getAcierto())-retonarEsquiva(victima);
-        
-        if (golpear<0)
-            golpear = 0;
-        else if (golpear>100)
-            golpear = 100;
+        golpear = (atacante.puntosHabilidad*2+atacante.puntosSuerte/2+atacante.getArma().getAcierto())-retornarEsquiva(victima);
         
         //System.out.println("Golpe");
         return golpear;
@@ -49,11 +44,6 @@ public abstract class Unidad
         double critico;
         
         critico = atacante.puntosHabilidad/2 - retornarResCritico(victima);
-        
-        if (critico<0)
-            critico = 0;
-        else if (critico>100)
-            critico = 100;
         
         //System.out.println("Critico");
         return critico;
@@ -68,7 +58,7 @@ public abstract class Unidad
     // Retorna el daño realizado por un atacante hacia una victima
     public int retornarDaño(Unidad atacante, Unidad victima)
     {
-        return atacante.puntosAtaque + retonarDañoArma(atacante) - victima.getPutosDefensa();
+        return atacante.puntosAtaque + retonarDañoArma(atacante) - victima.getPuntosDefensa();
     }
     
     // Calcula la chance de que ocurra un porcentaje
@@ -92,7 +82,7 @@ public abstract class Unidad
         String info;
         
         info = "\nNombre: "+this.nombre+"\nVida: "+this.puntosVida+"\nAtaque: "+
-                this.puntosAtaque+"\nHabilidad: "+this.puntosHabilidad+"\nDefensa: "+this.putosDefensa+"\nVelocidad: "+
+                this.puntosAtaque+"\nHabilidad: "+this.puntosHabilidad+"\nDefensa: "+this.puntosDefensa+"\nVelocidad: "+
                 this.puntosVelocidad+"\nSuerte: "+this.puntosSuerte+"\nArma: "+
                 this.getArma().getNombre()+"\nDaño arma: "+this.getArma().getDaño()+"\nGolpe arma: "+
                 this.getArma().getAcierto()+"\n";
@@ -100,13 +90,13 @@ public abstract class Unidad
         return info;
     }
 
-    public Unidad(String nombre, int puntosVida, int puntosHabilidad,int puntosAtaque, int putosDefensa, int puntosVelocidad, double puntosSuerte, Arma arma) 
+    public Unidad(String nombre, int puntosVida, int puntosHabilidad,int puntosAtaque, int putosDefensa, int puntosVelocidad, int puntosSuerte, Arma arma) 
     {
         this.nombre = nombre;
         this.puntosVida = puntosVida;
         this.puntosHabilidad = puntosHabilidad;
         this.puntosAtaque = puntosAtaque;
-        this.putosDefensa = putosDefensa;
+        this.puntosDefensa = putosDefensa;
         this.puntosVelocidad = puntosVelocidad;
         this.puntosSuerte = puntosSuerte;
         this.arma = arma;
@@ -121,8 +111,8 @@ public abstract class Unidad
     public void setPuntosHabilidad(int habilidad) { this.puntosHabilidad = habilidad; }
     public int getPuntosAtaque() { return puntosAtaque; }
     public void setPuntosAtaque(int puntosAtaque) { this.puntosAtaque = puntosAtaque; }
-    public int getPutosDefensa() { return putosDefensa; }
-    public void setPutosDefensa(int putosDefensa) { this.putosDefensa = putosDefensa; }
+    public int getPuntosDefensa() { return puntosDefensa; }
+    public void setPuntosDefensa(int putosDefensa) { this.puntosDefensa = putosDefensa; }
     public int getPuntosVelocidad() { return puntosVelocidad; }
     public void setPuntosVelocidad(int puntosVelocidad) { this.puntosVelocidad = puntosVelocidad; }
     public double getPuntosSuerte() { return puntosSuerte; }
@@ -131,41 +121,48 @@ public abstract class Unidad
     public void setArma(Arma arma) { this.arma = arma; }
     
     // Método para recibir daño
-    public void recibirDaño(Unidad atacante, Unidad victima, int daño) 
+    public void recibirDaño(int daño) 
     {   
-        victima.puntosVida -= daño;
+        this.puntosVida -= daño;
         if (puntosVida < 0) 
             puntosVida = 0;
     }
+    
+        // Método de ataque principal
+    public void atacar(Unidad victima) {
+        int daño = calcularDaño(this, victima);
 
-    // Método para atacar a otra unidad
-    public void atacar(Unidad atacante, Unidad victima) 
-    {
-        int daño = retornarDaño(atacante, victima);
-                
         if (daño > 0) 
         {
-            // Aumenta el daño en caso de golpe crítico
-            if (ocurrencia(retornarCritico(atacante, victima))) 
+            if (isCritico(this, victima)) 
             {
                 daño *= 2;
-                victima.recibirDaño(atacante, victima, daño);
-                System.out.println("-- "+atacante.nombre + " hizo un golpe crítico! --");
-                System.out.println(atacante.nombre + " atacó a " + victima.getNombre() + " causando " + daño + " puntos de daño");
-            }
-            
-            // Chance de evitar el ataque
-            else if (ocurrencia(retornarGolpear(atacante, victima)))
+                victima.recibirDaño(daño);
+                System.out.println("-- " + this.nombre + " hizo un golpe crítico! --");
+            } 
+            else if (puedeGolpear(this, victima)) 
             {
-                victima.recibirDaño(atacante, victima, daño);
-                System.out.println(atacante.nombre + " atacó a " + victima.getNombre() + " causando " + daño + " puntos de daño");
-            }
+                victima.recibirDaño(daño);
+                System.out.println(this.nombre + " atacó a " + victima.getNombre() + " causando " + daño + " puntos de daño");
+            } 
             else
-            {
-                System.out.println("-- "+victima.nombre+" evitó el ataque! --");
-            }
+                System.out.println("-- " + victima.nombre + " evitó el ataque! --");
         } 
-        else
-            System.out.println("-- "+atacante.nombre + " no pudo hacer daño a " + victima.getNombre()+" --");
+        else 
+            System.out.println("-- " + this.nombre + " no pudo hacer daño a " + victima.getNombre() + " --");
+    }
+
+    private int calcularDaño(Unidad atacante, Unidad victima) {
+        return atacante.puntosAtaque+atacante.getArma().getDaño()-victima.getPuntosDefensa();
+    }
+
+    private boolean isCritico(Unidad atacante, Unidad victima) {
+        double probabilidadCritico = atacante.puntosHabilidad/2-victima.puntosSuerte;
+        return ocurrencia(Math.max(0, Math.min(100, probabilidadCritico)));
+    }
+
+    private boolean puedeGolpear(Unidad atacante, Unidad victima) {
+        double probabilidadGolpear = atacante.puntosHabilidad*2+atacante.puntosSuerte/2+atacante.getArma().getAcierto()-(victima.puntosVelocidad+victima.puntosSuerte/2);
+        return ocurrencia(Math.max(0, Math.min(100, probabilidadGolpear)));
     }
 }

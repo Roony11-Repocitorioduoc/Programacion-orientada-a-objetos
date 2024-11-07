@@ -6,7 +6,7 @@ public class Combate {
 
         int cuenta = 1;
         
-        String infocombate = "-- Información del combate --\n"+"\nVida: "+unidad1.getPuntosVida()+" - "+
+        String infocombate = "-- Información del combate --\n\nVida: "+unidad1.getPuntosVida()+" - "+
                 unidad2.getPuntosVida()+" :Vida\n"+unidad1.getNombre()+" V/S "+unidad2.getNombre()+
                 "\nGolpe: "+unidad1.retornarGolpear(unidad1, unidad2)+" - "+unidad2.retornarGolpear(unidad2, unidad1)+" :Golpe"+
                 "\nDaño: "+unidad1.retornarDaño(unidad1, unidad2)+" - "+unidad2.retornarDaño(unidad2, unidad1)+" :Daño"+
@@ -19,17 +19,17 @@ public class Combate {
             System.out.println("\n-- Ronda "+cuenta+" --\n"+unidad1.getNombre()+" - "+unidad2.getNombre()+"\nVida: "+
                     unidad1.getPuntosVida()+" - "+unidad2.getPuntosVida()+" :Vida\n");
             
-            unidad1.atacar(unidad1, unidad2);
+            unidad1.atacar(unidad2);
             // Si es suficientemente rapido la unidad ataca dos veces
             if (unidad1.getPuntosVelocidad()-unidad2.getPuntosVelocidad()>=4 && unidad2.isAlive())
-                unidad1.atacar(unidad1, unidad2);
+                unidad1.atacar(unidad2);
             
             if (unidad2.getPuntosVida() > 0)
                 
-                unidad2.atacar(unidad2,unidad1);
+                unidad2.atacar(unidad1);
             // Si es suficientemente rapido la unidad ataca dos veces
             if (unidad2.getPuntosVelocidad()-unidad1.getPuntosVelocidad()>=4 && unidad1.isAlive())
-                unidad2.atacar(unidad2, unidad1);
+                unidad2.atacar(unidad1);
             
             cuenta += 1;
         }

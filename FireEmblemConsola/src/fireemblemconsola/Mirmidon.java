@@ -1,13 +1,13 @@
 package fireemblemconsola;
 
-public class Lord extends Unidad
+public class Mirmidon extends Unidad
 {
-    private final String DESCRIPCION = "Noble de una casa,\ncon un gran potencial";
+    private final String DESCRIPCION = "Genios de la espada,\ncon una muy buena suerte";
 
-    public Lord(String nombre, Arma arma) 
+    public Mirmidon(String nombre, Arma arma) 
     {
         // nombre, vida, habilidad, fuerza, defensa, velocidad, suerte
-        super(nombre, 18, 5, 5, 5, 7, 0, arma);
+        super(nombre, 16, 9, 4, 2, 10, 0, arma);
     }
     
     @Override

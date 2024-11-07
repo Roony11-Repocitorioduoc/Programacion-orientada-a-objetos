@@ -1,12 +1,12 @@
 package fireemblemconsola;
 
-public class Espada extends Arma
+public class Lanza extends Arma
 {
     private final String NOMBRE = this.getClass().getSimpleName();  
-    private final String DESCRIPCION = "Arma balanceada,\npierde ante las lanzas,\ngana contra las hachas";
+    private final String DESCRIPCION = "Arma balanceada,\npierde ante las hachas,\ngana contra las espadas";
     private String nombre;
     
-    public Espada(int daño, int acierto,String material)
+    public Lanza(int daño, int acierto,String material)
     {
         super(daño, acierto);
         this.nombre = this.NOMBRE+" de "+material;

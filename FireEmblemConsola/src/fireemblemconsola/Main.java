@@ -5,18 +5,22 @@ public class Main
 
     public static void main(String[] args) 
     {
-        Espada espadaP = new Espada(10, 80,"Plata");
-        Espada espadaH = new Espada(6, 90,"Hierro");
+        Espada espadaP = new Espada(10, 80, "Plata");
+        Espada espadaH = new Espada(6, 90, "Hierro");
         
-        Lord mark = new Lord("Mark", espadaP);
-        Espadachin lloyd = new Espadachin("Lloyd", espadaH);
-        Espadachin marisa = new Espadachin("Marisa", espadaP);
+        Lanza lanzaH = new Lanza(7, 80, "Hierro");
+        
+        Lord eliwood = new Lord("Eliwood", espadaP);
+        Mirmidon lloyd = new Mirmidon("Lloyd", espadaH);
+        Mirmidon marisa = new Mirmidon("Marisa", espadaP);
+        Caballero oswin = new Caballero("Oswin", lanzaH);
               
-        mark.imprimirInformacion();
+        eliwood.imprimirInformacion();
         lloyd.imprimirInformacion();       
         marisa.imprimirInformacion();
+        oswin.imprimirInformacion();
         
-        Combate.iniciarCombate(mark, marisa);
+        Combate.iniciarCombate(oswin, eliwood);
     }
     
 }

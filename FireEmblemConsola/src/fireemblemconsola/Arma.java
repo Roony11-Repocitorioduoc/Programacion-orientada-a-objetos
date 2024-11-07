@@ -19,6 +19,4 @@ public abstract class Arma
     public void setDaño(int daño) { this.daño = daño; }
     public int getAcierto() { return acierto; }
     public void setAcierto(int acierto) { this.acierto = acierto; }
-    
-    
 }

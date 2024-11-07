@@ -1,13 +1,14 @@
 package fireemblemconsola;
 
-public class Lord extends Unidad
+public class Caballero extends Unidad
 {
-    private final String DESCRIPCION = "Noble de una casa,\ncon un gran potencial";
+    private final String DESCRIPCION = "Con un gran coraje,\ntienen una gran defensa";
 
-    public Lord(String nombre, Arma arma) 
+
+    public Caballero(String nombre, Arma arma) 
     {
         // nombre, vida, habilidad, fuerza, defensa, velocidad, suerte
-        super(nombre, 18, 5, 5, 5, 7, 0, arma);
+        super(nombre, 17, 3, 5, 9, 2, 0, arma);
     }
     
     @Override
