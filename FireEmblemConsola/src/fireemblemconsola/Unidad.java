@@ -5,61 +5,17 @@ import java.util.Random;
 public abstract class Unidad 
 {
     private String nombre;
+    private String descripcion;
     private int puntosVida;
     private int puntosHabilidad;
     private int puntosAtaque;
     private int puntosDefensa;
     private int puntosVelocidad;
     private int puntosSuerte;
+    private int puntosConstitucion;
+    private int puntosExperiencia;
+    private int nivel;
     private Arma arma;
-    
-    public abstract void imprimirInformacion();
-    
-    // Retorna el porcentaje de esquiva de la victima
-    public double retornarEsquiva(Unidad victima)
-    {
-        return victima.puntosVelocidad+(victima.puntosSuerte/2);
-    }
-    
-    // Retorna la resistencia de critico de la victima
-    public double retornarResCritico(Unidad victima)
-    {
-        return victima.puntosSuerte;
-    }
-    
-    // Retorna la el porcetaje de golpe del atacante hacia una victima
-    public double retornarGolpear(Unidad atacante, Unidad victima)
-    {
-        double golpear;
-        
-        golpear = (atacante.puntosHabilidad*2+atacante.puntosSuerte/2+atacante.getArma().getAcierto())-retornarEsquiva(victima);
-        
-        //System.out.println("Golpe");
-        return golpear;
-    }
-    
-    // Retorna el porcentaje de acierto de critico
-    public double retornarCritico(Unidad atacante, Unidad victima)
-    {
-        double critico;
-        
-        critico = atacante.puntosHabilidad/2 - retornarResCritico(victima);
-        
-        //System.out.println("Critico");
-        return critico;
-    }
-    
-    // Retorna el daño del arma equipada
-    public int retonarDañoArma(Unidad atacante)
-    {
-        return atacante.getArma().getDaño();
-    }
-    
-    // Retorna el daño realizado por un atacante hacia una victima
-    public int retornarDaño(Unidad atacante, Unidad victima)
-    {
-        return atacante.puntosAtaque + retonarDañoArma(atacante) - victima.getPuntosDefensa();
-    }
     
     // Calcula la chance de que ocurra un porcentaje
     public static boolean ocurrencia(double porcentaje) 
@@ -77,20 +33,121 @@ public abstract class Unidad
         return chance <= porcentaje;
     }
     
-    public String retornarInformación()
+    // Método para obtener el ajuste de ventaja entre dos armas
+    private int obtenerAjusteVentaja(Arma armaAtacante, Arma armaVictima) {
+        if ((armaAtacante instanceof Espada && armaVictima instanceof Hacha) ||
+            (armaAtacante instanceof Hacha && armaVictima instanceof Lanza) ||
+            (armaAtacante instanceof Lanza && armaVictima instanceof Espada)) {
+            return 1;  // +1 de daño o +15 de precisión por ventaja
+        } else if ((armaAtacante instanceof Espada && armaVictima instanceof Lanza) ||
+                   (armaAtacante instanceof Hacha && armaVictima instanceof Espada) ||
+                   (armaAtacante instanceof Lanza && armaVictima instanceof Hacha)) {
+            return -1; // -1 de daño o -15 de precisión por desventaja
+        }
+        return 0;  // Sin ventaja ni desventaja
+    }
+    
+    // Retorna el porcentaje de esquiva de la victima
+    public double calcularEsquiva(Unidad victima)
     {
-        String info;
+        return victima.puntosVelocidad+(victima.puntosSuerte/2);
+    }
+    
+    private int calcularVelocidadAtaque()
+    {
+        int velocidadAtaque = this.puntosVelocidad-(this.arma.getPeso()-this.puntosConstitucion);
+        return Math.max(0, velocidadAtaque);
+    }
+    
+    public boolean isDoble(Unidad victima)
+    {
+        int velocidad = Math.max(0, this.calcularVelocidadAtaque()-victima.calcularVelocidadAtaque());
+        return velocidad>=4;
+    }
+    
+    public int cantidadAtaques(Unidad victima)
+    {
+        int cantidadAtaques=1;
+        if (isDoble(victima))
+            cantidadAtaques=2;
+        return cantidadAtaques;
+    }
+    
+    // Retorna la el porcetaje de golpe del atacante hacia una victima
+    public double calcularGolpe(Unidad atacante, Unidad victima)
+    {
+        double golpear;
         
-        info = "\nNombre: "+this.nombre+"\nVida: "+this.puntosVida+"\nAtaque: "+
-                this.puntosAtaque+"\nHabilidad: "+this.puntosHabilidad+"\nDefensa: "+this.puntosDefensa+"\nVelocidad: "+
-                this.puntosVelocidad+"\nSuerte: "+this.puntosSuerte+"\nArma: "+
-                this.getArma().getNombre()+"\nDaño arma: "+this.getArma().getDaño()+"\nGolpe arma: "+
-                this.getArma().getAcierto()+"\n";
+        golpear = (atacante.puntosHabilidad*2+atacante.puntosSuerte/2+atacante.getArma().getAcierto())-calcularEsquiva(victima);
         
-        return info;
+        // Ajuste de precisión según ventaja/desventaja entre atacante y víctima
+        golpear += obtenerAjusteVentaja(atacante.getArma(), victima.getArma()) * 15;
+        
+        //System.out.println("Golpe");
+        return Math.max(0, Math.min(100, golpear));
+    }
+    
+    public int calcularDaño(Unidad atacante, Unidad victima) 
+    {
+        int daño = atacante.puntosAtaque+atacante.getArma().getDaño()-victima.getPuntosDefensa();   
+        return Math.max(0, daño);
+    }
+    
+    // Retorna la resistencia de critico de la victima
+    public double calcularResCritico(Unidad victima)
+    {
+        return victima.puntosSuerte;
+    }
+    
+    // Retorna el porcentaje de acierto de critico
+    public double calcularCritico(Unidad atacante, Unidad victima)
+    {
+        double critico = atacante.puntosHabilidad/2 + atacante.getArma().getCritico() - calcularResCritico(victima);
+        
+        //System.out.println("Critico");
+        return Math.max(0, Math.min(100, critico));
+    }
+    
+        private boolean isCritico(Unidad atacante, Unidad victima) 
+    {
+        double probabilidadCritico = calcularCritico(atacante, victima);       
+        return ocurrencia(Math.max(0, Math.min(100, probabilidadCritico)));
     }
 
-    public Unidad(String nombre, int puntosVida, int puntosHabilidad,int puntosAtaque, int putosDefensa, int puntosVelocidad, int puntosSuerte, Arma arma) 
+    private boolean puedeGolpear(Unidad atacante, Unidad victima) 
+    {
+        double probabilidadGolpear = calcularGolpe(atacante, victima);        
+        return ocurrencia(Math.max(0, Math.min(100, probabilidadGolpear)));
+    }
+        
+    public String retornarInformación() {
+        StringBuilder info = new StringBuilder();
+
+        info.append("\n-Nombre: ").append(this.nombre)
+            .append("\n-Descripcion: ").append(this.descripcion)
+            .append("\n-Nivel: ").append(this.nivel)
+            .append("\n-Experiencia: ").append(this.puntosExperiencia).append("/100")
+            .append("\n-Vida: ").append(this.puntosVida)
+            .append("\n-Ataque: ").append(this.puntosAtaque)
+            .append("\n-Habilidad: ").append(this.puntosHabilidad)
+            .append("\n-Defensa: ").append(this.puntosDefensa)
+            .append("\n-Velocidad: ").append(this.puntosVelocidad)
+            .append("\n-Suerte: ").append(this.puntosSuerte)
+            .append("\n-Constitucion: ").append(this.puntosConstitucion);
+
+        return info.toString();
+    }
+    
+    public void imprimirInformacion() {
+        StringBuilder info = new StringBuilder();
+
+        info.append("-Clase: ").append(this.getClass().getSimpleName())
+            .append(retornarInformación());
+
+        System.out.println(info.toString());
+    }
+    
+    public Unidad(String nombre, int puntosVida, int puntosHabilidad,int puntosAtaque, int putosDefensa, int puntosVelocidad, int puntosSuerte, int puntosConstitucion,Arma arma) 
     {
         this.nombre = nombre;
         this.puntosVida = puntosVida;
@@ -99,12 +156,17 @@ public abstract class Unidad
         this.puntosDefensa = putosDefensa;
         this.puntosVelocidad = puntosVelocidad;
         this.puntosSuerte = puntosSuerte;
+        this.puntosConstitucion = puntosConstitucion;
+        this.nivel = 1;
+        this.puntosExperiencia = 0;
         this.arma = arma;
     }
 
     public boolean isAlive() { return (this.puntosVida>0); }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public int getPuntosVida() { return puntosVida; }
     public void setPuntosVida(int puntosVida) { this.puntosVida = puntosVida; }
     public int getPuntosHabilidad() { return puntosHabilidad; }
@@ -115,10 +177,43 @@ public abstract class Unidad
     public void setPuntosDefensa(int putosDefensa) { this.puntosDefensa = putosDefensa; }
     public int getPuntosVelocidad() { return puntosVelocidad; }
     public void setPuntosVelocidad(int puntosVelocidad) { this.puntosVelocidad = puntosVelocidad; }
-    public double getPuntosSuerte() { return puntosSuerte; }
+    public int getPuntosSuerte() { return puntosSuerte; }
     public void setPuntosSuerte(int puntosSuerte) { this.puntosSuerte = puntosSuerte; }
+    public int getPuntosConstitucion() { return puntosConstitucion; }
+    public void setPuntosExperiencia(int puntosExperiencia) { this.puntosExperiencia = puntosExperiencia; }
+    public int getPuntosExperiencia() { return puntosExperiencia; }
+    public void setNivel(int nivel) { this.nivel = nivel; }
+    public int getNivel() { return nivel; }
+    public void setPuntosConstitucion(int puntosConstitucion) { this.puntosConstitucion = puntosConstitucion; }
     public Arma getArma() { return arma; }
     public void setArma(Arma arma) { this.arma = arma; }
+    
+    // Método para ganar experiencia
+    public void ganarExperiencia(int puntos) 
+    {
+        this.puntosExperiencia += puntos;
+        
+        if (this.puntosExperiencia >= 100) 
+            subirNivel();
+    }
+    
+    // Método para subir de nivel
+    private void subirNivel() 
+    {
+        this.nivel++;
+
+        // Aumento de estadísticas al subir de nivel
+        Random rand = new Random();
+        this.puntosVida += rand.nextInt(5) + 1;  // Incrementa entre 1 y 5 puntos de vida
+        this.puntosAtaque += rand.nextInt(3) + 1; // Incrementa entre 1 y 3 puntos de ataque
+        this.puntosDefensa += rand.nextInt(2) + 1; // Incrementa entre 1 y 2 puntos de defensa
+        this.puntosVelocidad += rand.nextInt(2) + 1; // Incrementa entre 1 y 2 puntos de velocidad
+        this.puntosSuerte += rand.nextInt(2) + 1; // Incrementa entre 1 y 2 puntos de suerte
+        this.puntosExperiencia -= 100;  // Restamos 100 puntos de experiencia al subir de nivel
+
+        // Imprimir información al subir de nivel
+        System.out.println(this.nombre + " ha subido al nivel " + this.nivel + "!");
+    }
     
     // Método para recibir daño
     public void recibirDaño(int daño) 
@@ -139,6 +234,7 @@ public abstract class Unidad
                 daño *= 2;
                 victima.recibirDaño(daño);
                 System.out.println("-- " + this.nombre + " hizo un golpe crítico! --");
+                System.out.println(this.nombre + " atacó a " + victima.getNombre() + " causando " + daño + " puntos de daño");
             } 
             else if (puedeGolpear(this, victima)) 
             {
@@ -150,19 +246,5 @@ public abstract class Unidad
         } 
         else 
             System.out.println("-- " + this.nombre + " no pudo hacer daño a " + victima.getNombre() + " --");
-    }
-
-    private int calcularDaño(Unidad atacante, Unidad victima) {
-        return atacante.puntosAtaque+atacante.getArma().getDaño()-victima.getPuntosDefensa();
-    }
-
-    private boolean isCritico(Unidad atacante, Unidad victima) {
-        double probabilidadCritico = atacante.puntosHabilidad/2-victima.puntosSuerte;
-        return ocurrencia(Math.max(0, Math.min(100, probabilidadCritico)));
-    }
-
-    private boolean puedeGolpear(Unidad atacante, Unidad victima) {
-        double probabilidadGolpear = atacante.puntosHabilidad*2+atacante.puntosSuerte/2+atacante.getArma().getAcierto()-(victima.puntosVelocidad+victima.puntosSuerte/2);
-        return ocurrencia(Math.max(0, Math.min(100, probabilidadGolpear)));
     }
 }
