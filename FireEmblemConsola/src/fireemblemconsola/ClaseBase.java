@@ -2,10 +2,9 @@ package fireemblemconsola;
 
 public abstract class ClaseBase extends Unidad 
 {
-    // Array que almacena los crecimientos del personaje.
+    // Clase que almacena los crecimientos del personaje.
     private CrecimientoPersonaje crecimientos;
     
-    // Constructor que recibe la lista de tipos de armas permitidos
     protected ClaseBase(String nombre, int vida, int habilidad, int fuerza, int defensa, int velocidad, int suerte, int constitucion, Arma arma, CrecimientoPersonaje crecimientos) 
     {
         super(nombre, vida, habilidad, fuerza, defensa, velocidad, suerte, constitucion, arma);
@@ -19,7 +18,7 @@ public abstract class ClaseBase extends Unidad
 
     private void subirEstadistica(int roll) 
     {
-        // Lógica de subida de nivel para cada estadística en CrecimientoPersonaje
+        // LÃ³gica de subida de nivel para cada estadÃ­stica en CrecimientoPersonaje
         while (roll != 0)
         {
             if (chanceSubirEstadistica(crecimientos.getVida(), roll)) {
@@ -49,10 +48,10 @@ public abstract class ClaseBase extends Unidad
         }
     }
 
-    // Método para subir de nivel
+    // MÃ©todo para subir de nivel
     @Override
     public void subirNivel() {
-        int roll = 4;  // Número de subidas permitidas
+        int roll = 4;  // NÃºmero de subidas permitidas
         this.setNivel(this.getNivel() + 1);
 
         // Llama a subirEstadistica para aplicar los crecimientos
@@ -60,7 +59,7 @@ public abstract class ClaseBase extends Unidad
 
         this.setPuntosExperiencia(this.getPuntosExperiencia()-100);
 
-        // Imprimir información al subir de nivel
+        // Imprimir informaciÃ³n al subir de nivel
         System.out.println(this.getNombre() + " ha subido al nivel " + this.getNivel() + "!");
     }
     
