@@ -30,21 +30,18 @@ public class Combate
             System.out.println("\n-- Ronda "+cuenta+" --\n"+unidad1.getNombre()+" - "+unidad2.getNombre()+"\nVida: "+
                     unidad1.getPuntosVida()+" - "+unidad2.getPuntosVida()+" :Vida\n");
             
-        for (int i = 0; i < unidad1.cantidadAtaques(unidad2); i++) 
-        {
-            if (unidad2.isAlive())
+            if (unidad2.isAlive() && unidad1.isAlive())
                 unidad1.atacar(unidad2);
-        }
-
-        // Si sigue viva la unidad 2, contraataca
-        if (unidad2.isAlive())
-        {
-            for (int i = 0; i < unidad2.cantidadAtaques(unidad1); i++) 
-            {
-                if (unidad1.isAlive())
+            
+            if (unidad1.isAlive() & unidad2.isAlive())
                     unidad2.atacar(unidad1);
-            }
-        }
+            
+            if (unidad1.isAlive() && unidad2.isAlive() && unidad1.cantidadAtaques(unidad2)>1)
+                unidad1.atacar(unidad2);
+            
+            if (unidad2.isAlive() && unidad1.isAlive() && unidad2.cantidadAtaques(unidad1)>1)
+                unidad2.atacar(unidad1);
+            
             cuenta += 1;
         }
 

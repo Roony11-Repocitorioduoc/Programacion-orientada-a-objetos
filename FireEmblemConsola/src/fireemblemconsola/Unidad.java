@@ -19,6 +19,11 @@ public abstract class Unidad
     
     // Método para subir de nivel
     public abstract void subirNivel();
+    public abstract CrecimientoPersonaje getCrecimientos();
+    public abstract EstadisticasMaximas getEstadisticasMaximas();
+    public abstract AtributosUnidad guardarAtributos();
+    public abstract String getClase();
+    public abstract void setClase(String clase);
     
     // Calcula la chance de que ocurra un porcentaje
     public static boolean ocurrencia(double porcentaje) 
@@ -144,7 +149,7 @@ public abstract class Unidad
     public void imprimirInformacion() {
         StringBuilder info = new StringBuilder();
 
-        info.append("-Clase: ").append(this.getClass().getSimpleName())
+        info.append("-Clase: ").append(this.getClase())
             .append(retornarInformación());
 
         System.out.println(info.toString());

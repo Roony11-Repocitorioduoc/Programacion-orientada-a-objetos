@@ -4,35 +4,47 @@ public class Main
 {
     public static void main(String[] args) 
     {
+        ManejoPromociones manejoPromociones = new ManejoPromociones();
+        
         // Crecimiento Eliwood
-        CrecimientoPersonaje crecimientoEliwood = new CrecimientoPersonaje(80, 50, 45, 30, 40, 45);
+        CrecimientoPersonaje crecimientoEliwood = new CrecimientoPersonaje(200, 200, 200, 200, 200, 200);
         // Crecimiento Marisa
         CrecimientoPersonaje crecimientoMarisa = new CrecimientoPersonaje(75, 55, 30, 15, 60, 50);
+        // promocion espadachin
+        Promocion espadachin = new Promocion("Espadachin", "Maestros de la espada\n+25% de Crit rate", new EstadisticasMaximas(60, 29, 24, 22, 30, 30));
         // Lord 
-        Lord eliwood = new Lord("Eliwood", InicializadorArmas.espadaAsesina, crecimientoEliwood);
+        //Lord eliwood = new Lord("Eliwood", InicializadorArmas.espadaP, crecimientoEliwood, EstadisticasLimite.sinPromocionar);
         
         // Mirmidon
         //Mirmidon lloyd = new Mirmidon("Lloyd", InicializadorArmas.espadaAsesina);
-        Mirmidon marisa = new Mirmidon("Marisa", InicializadorArmas.espadaAsesina, crecimientoMarisa);
+        Mirmidon marisa = new Mirmidon("Marisa", InicializadorArmas.espadaAsesina, crecimientoMarisa, EstadisticasLimite.sinPromocionar);
         
         // Caballero
-        //Caballero oswin = new Caballero("Oswin", InicializadorArmas.LanzaP);
+        //Caballero oswin = new Caballero("Oswin", InicializadorArmas.LanzaP, EstadisticasLimite.sinPromocionar);
         
         // Luchador
-        //Luchador garcia = new Luchador("Garcia", InicializadorArmas.hachaAsesina, crecimientoTest);
+        Luchador garcia = new Luchador("Garcia", InicializadorArmas.hachaAsesina, crecimientoEliwood, EstadisticasLimite.sinPromocionar);
         
-        eliwood.imprimirInformacion();
-        marisa.imprimirInformacion();
+        //eliwood.imprimirInformacion();
+        //marisa.imprimirInformacion();
         
         //Combate.iniciarCombate(garcia, eliwood);
         
-        eliwood.ganarExperiencia(2000);
+        garcia.ganarExperiencia(2000);
         marisa.ganarExperiencia(2000);
         
-        eliwood.imprimirInformacion();
-        marisa.imprimirInformacion();
+        //eliwood.imprimirInformacion();
+        //marisa.imprimirInformacion();
         
-        Combate.iniciarCombate(marisa, eliwood);
+        marisa.promocionar(manejoPromociones);
+        garcia.promocionar(manejoPromociones);
+        
+        marisa.ganarExperiencia(2000);
+        marisa.imprimirInformacion();
+        garcia.ganarExperiencia(2000);
+        garcia.imprimirInformacion();
+        
+        Combate.iniciarCombate(marisa, garcia);
     }
     private static class InicializadorArmas
     {
@@ -65,5 +77,11 @@ public class Main
         public static final Hacha HachaP = new Hacha(15, 70, 0, 12, HACHA+PLATA);
         // Hacha Asesina
         public static final Hacha hachaAsesina = new Hacha(11, 65, 30, 11, "Hacha Asesina");
+    }
+    
+    public static class EstadisticasLimite
+    {
+        // Clases sin promocionar
+        public static final EstadisticasMaximas sinPromocionar = new EstadisticasMaximas(60, 20, 20, 20, 20, 30);
     }
 }
